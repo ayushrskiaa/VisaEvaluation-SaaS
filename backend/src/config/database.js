@@ -2,8 +2,6 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 function ensureEnvLoaded() {
-  // Some scripts may import db.js directly without going through app.js,
-  // so we defensively load env here as well.
   if (process.env.MONGODB_URI) return;
   dotenv.config();
 }
