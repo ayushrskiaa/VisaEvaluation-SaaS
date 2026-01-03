@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "evaluations": []
+}
+    {
+      "id": "04384aa5-6c6f-4c6b-9f26-78cc6ebc5abb",
+      "name": "Test User",
+      "email": "test@example.com",
+      "countryCode": "US",
+      "visaTypeId": "US_H1B",
+      "documents": [],
+      "rawScore": 0,
+      "score": 0,
+      "scoreCap": 85,
+      "summary": "Test evaluation",
+      "suggestions": [
+        "Test suggestion"
+      ],
+      "createdAt": "2026-01-03T07:50:26.841Z",
+      "updatedAt": "2026-01-03T07:50:26.882Z"
+    },
+    {
+      "id": "8a8303da-a92c-4426-b541-7d5f25dff92a",
+      "name": "Mongo Upload",
+      "email": "mongoupload@example.com",
+      "countryCode": "US",
+      "visaTypeId": "US_O1A",
+      "documents": [
+        {
+          "documentType": "resume",
+          "originalName": "dummy.pdf",
+          "storagePath": "uploads/1767426635097_b865ee4e91de.pdf",
+          "mimeType": "application/pdf",
+          "sizeBytes": 17,
+          "uploadedAt": "2026-01-03T07:50:35.101Z"
+        }
+      ],
+      "rawScore": 25,
+      "score": 25,
+      "scoreCap": 85,
+      "summary": "Missing 3 of 4 required documents for O-1A (Extraordinary Ability). Upload remaining documents to improve your score.",
+      "suggestions": [
+        "Upload: personal_statement, recommendation_letters, evidence_portfolio",
+        "Prefer PDF scans and clear filenames."
+      ],
+      "createdAt": "2026-01-03T07:50:35.063Z",
+      "updatedAt": "2026-01-03T07:50:35.958Z"
+    },
+    {
+      "id": "94629fd9-5f86-44cc-88c1-0752b6363c87",
+      "name": "John Smith",
+      "email": "john.smith@example.com",
+      "countryCode": "US",
+      "visaTypeId": "US_O1A",
+      "documents": [],
+      "rawScore": 0,
+      "score": 0,
+      "scoreCap": 85,
+      "summary": "Missing 4 of 4 required documents for O-1A (Extraordinary Ability). Upload remaining documents to improve your score.",
+      "suggestions": [
+        "Upload: resume, personal_statement, recommendation_letters, evidence_portfolio",
+        "Prefer PDF scans and clear filenames."
+      ],
+      "createdAt": "2026-01-03T07:54:59.969Z",
+      "updatedAt": "2026-01-03T07:55:00.967Z"
+    }
+  ]
+}
