@@ -43,10 +43,16 @@ export async function evaluateSubmissionWithAI({ visa, documents, applicantName 
     applicantName,
   });
 
+  // Apply configurable maximum score cap from environment variable (default 85%)
+  const maxScoreCap = parseInt(process.env.MAX_SCORE_CAP || '85', 10);
+  const cappedScore = Math.min(aiResult.score, maxScoreCap);
+
+  console.log(`📊 Score Calculation: AI=${aiResult.score}, Cap=${maxScoreCap}, Final=${cappedScore}`);
+
   return {
-    rawScore: aiResult.score,
-    score: aiResult.score,
-    scoreCap: 100,
+    rawScore: aiResult.score,        // Original AI score (uncapped)
+    score: cappedScore,               // Capped score shown to user
+    scoreCap: maxScoreCap,            // Maximum allowed score
     missingDocuments,
     summary: aiResult.summary,
     suggestions: aiResult.suggestions,

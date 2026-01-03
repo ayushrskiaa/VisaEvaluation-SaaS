@@ -1,12 +1,4 @@
-/**
- * Express Application Factory
- * 
- * Creates and configures the Express application with:
- * - CORS for cross-origin requests (frontend on different port)
- * - JSON parsing for request bodies
- * - API routes for catalog, evaluations, and uploads
- * - Global error handler
- */
+
 
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -15,7 +7,6 @@ import express from 'express';
 import { catalogRouter } from './routes/catalog.route.js';
 import { evaluationRouter } from './routes/evaluation.route.js';
 import { uploadRouter } from './routes/upload.route.js';
-import { partnerRouter } from './routes/partner.route.js';
 import { AIEvaluationError } from './services/ai.service.js';
 
 export function createApp() {
@@ -44,7 +35,6 @@ export function createApp() {
   app.use('/api', catalogRouter);      // Countries and visa types
   app.use('/api', evaluationRouter);   // Create and retrieve evaluations
   app.use('/api', uploadRouter);       // Document uploads
-  app.use('/api', partnerRouter);      // Partner API and embed support
 
   // Global error handler
   // eslint-disable-next-line no-unused-vars
