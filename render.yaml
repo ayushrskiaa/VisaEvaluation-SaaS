@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: visa-eval-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: PORT
+        value: 4000
+      - key: MAX_SCORE_CAP
+        value: 85
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
