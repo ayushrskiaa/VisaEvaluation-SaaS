@@ -112,12 +112,22 @@ function mapGeminiError(err) {
 
 function extractJsonObject(text) {
   if (typeof text !== 'string') return null;
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) return null;
+  
+  // Remove markdown code blocks if present
+  let cleaned = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+  
+  // Try direct parse first
   try {
-    return JSON.parse(match[0]);
+    return JSON.parse(cleaned);
   } catch {
-    return null;
+    // If direct parse fails, try to extract JSON object from text
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    try {
+      return JSON.parse(match[0]);
+    } catch {
+      return null;
+    }
   }
 }
 
@@ -202,29 +212,19 @@ Document Completeness: ${documents.length}/${visa.requiredDocuments.length} docu
     prompt += `
 
 Analyze the application and provide:
-1. An evaluation score (0-100) based on:
-   - Document completeness
-   - Content quality and relevance to visa requirements
-   - Alignment with eligibility criteria
-   - Likelihood of approval
-2. A professional 2-3 sentence summary explaining the score and application status
-3. 3-5 specific, actionable suggestions to improve the application
+1. Score (0-100): Based on document completeness, content quality, and visa alignment
+2. Summary: ONE clear, concise sentence (max 100 words) explaining the evaluation
+3. Suggestions: 2-3 specific, actionable improvements
 
-Format your response as JSON:
+Format as JSON:
 {
   "score": 75,
-  "summary": "your detailed summary here",
-  "suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]
+  "summary": "Clear one-sentence evaluation",
+  "suggestions": ["Suggestion 1", "Suggestion 2"]
 }
 
-Scoring Guidelines:
-- 0-40: Major documents missing or application very incomplete
-- 41-60: Some documents present but significant gaps
-- 61-80: Most documents uploaded, minor improvements needed
-- 81-95: Strong application with all/most requirements met
-- 96-100: Exceptional application, exceeds requirements
-
-Keep the tone professional, encouraging, and constructive.`;
+Scoring: 0-40 incomplete, 41-60 gaps, 61-80 good, 81-95 strong, 96-100 exceptional.
+Be concise, professional, and constructive.`;
 
     const model = geminiClient.getGenerativeModel({
       model: getGeminiModelName(),
@@ -248,18 +248,22 @@ Keep the tone professional, encouraging, and constructive.`;
       contents: [{ role: 'user', parts }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1000,
+        maxOutputTokens: 2048,
         responseMimeType: 'application/json',
       },
     });
 
     const text = result?.response?.text?.() ?? '';
+    
+    // Log AI response to terminal FIRST
+    console.log('\n🤖 ===== GEMINI AI RESPONSE =====');
+    console.log(`Raw Response (${text.length} chars):`);
+    console.log(text);
+    console.log('\n📝 Attempting to parse JSON...');
+    
     const parsed = extractJsonObject(text);
     
-    // Log AI response to terminal
-    console.log('\n🤖 ===== GEMINI AI RESPONSE =====');
-    console.log('Raw Response:', text);
-    console.log('Parsed Result:', JSON.stringify(parsed, null, 2));
+    console.log('Parsed Result:', parsed ? JSON.stringify(parsed, null, 2) : 'NULL (parsing failed)');
     console.log('================================\n');
     
     if (parsed && typeof parsed.score === 'number') {

@@ -48,12 +48,38 @@ function ResultsDashboard({ evaluationId }) {
     return <div className="text-center text-gray-500">No evaluation found</div>;
   }
 
+  // Parse summary if it's JSON string (backward compatibility)
+  let displaySummary = evaluation.summary;
+  let aiScore = evaluation.score;
+  
+  if (typeof displaySummary === 'string' && displaySummary.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(displaySummary);
+      if (parsed.summary) {
+        displaySummary = parsed.summary;
+      }
+      if (typeof parsed.score === 'number') {
+        aiScore = parsed.score;
+      }
+    } catch {
+      // If parsing fails, use the raw summary (might be truncated JSON)
+      const summaryMatch = displaySummary.match(/"summary":\s*"([^"]*)"/);
+      if (summaryMatch) {
+        displaySummary = summaryMatch[1];
+      }
+      const scoreMatch = displaySummary.match(/"score":\s*(\d+)/);
+      if (scoreMatch) {
+        aiScore = parseInt(scoreMatch[1], 10);
+      }
+    }
+  }
+
   const safeCap = typeof evaluation.scoreCap === "number" && evaluation.scoreCap > 0 ? evaluation.scoreCap : 100;
-  const scorePercentage = Math.min(100, (evaluation.score / safeCap) * 100);
+  const scorePercentage = Math.min(100, (aiScore / safeCap) * 100);
   const scoreColor =
-    evaluation.score >= 70
+    aiScore >= 70
       ? "text-green-600"
-      : evaluation.score >= 40
+      : aiScore >= 40
       ? "text-yellow-600"
       : "text-red-600";
 
@@ -84,9 +110,9 @@ function ResultsDashboard({ evaluationId }) {
           <div className="text-center">
             <p className="mb-4 text-sm font-semibold text-gray-600">Chance of Success</p>
             <div className={`text-5xl font-bold ${scoreColor}`}>
-              {scorePercentage.toFixed(0)}%
+              {/* {scorePercentage.toFixed(0)}% */}
             </div>
-            <p className="mt-2 text-xs text-gray-500">Based on document completeness</p>
+            {/* <p className="mt-2 text-xs text-gray-500">AI-powered evaluation</p> */}
 
             {/* Circular Progress */}
             <div className="mx-auto mt-6 flex h-32 w-32 items-center justify-center rounded-full bg-gray-100">
@@ -131,19 +157,19 @@ function ResultsDashboard({ evaluationId }) {
         {/* Overview */}
         <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm md:col-span-2">
           <h3 className="mb-4 text-lg font-semibold text-gray-900">Overview</h3>
-          <p className="leading-relaxed text-gray-700">{evaluation.summary}</p>
+          <p className="leading-relaxed text-gray-700">{displaySummary}</p>
           <div className="mt-4 flex gap-2 pt-4">
-            {evaluation.score >= 70 && (
+            {aiScore >= 70 && (
               <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                 Strong Application
               </span>
             )}
-            {evaluation.score >= 40 && evaluation.score < 70 && (
+            {aiScore >= 40 && aiScore < 70 && (
               <span className="inline-block rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
                 Needs Improvement
               </span>
             )}
-            {evaluation.score < 40 && (
+            {aiScore < 40 && (
               <span className="inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
                 Incomplete Application
               </span>
@@ -156,7 +182,6 @@ function ResultsDashboard({ evaluationId }) {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">Required Documents</h3>
-          <button className="text-sm text-blue-600 hover:text-blue-700">Expand All</button>
         </div>
 
         <div className="space-y-3">
@@ -219,24 +244,7 @@ function ResultsDashboard({ evaluationId }) {
         </div>
       )}
 
-      {/* Conclusion */}
-      <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-6 shadow-sm md:p-8">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Next Steps</h3>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-gray-200 p-4">
-            <p className="text-sm font-medium text-gray-900">If documents are pending:</p>
-            <p className="mt-2 text-sm text-gray-600">
-              Upload the missing documents to improve your evaluation score and chances of success.
-            </p>
-          </div>
-          <div className="rounded-lg border border-gray-200 p-4">
-            <p className="text-sm font-medium text-gray-900">Once complete:</p>
-            <p className="mt-2 text-sm text-gray-600">
-              Review your complete application and consider consulting with an immigration specialist.
-            </p>
-          </div>
-        </div>
-      </div>
+
 
       {/* Applicant Info Footer */}
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
