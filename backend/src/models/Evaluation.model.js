@@ -4,7 +4,8 @@ const DocumentSchema = new mongoose.Schema(
   {
     documentType: { type: String, required: true },
     originalName: { type: String, required: true },
-    storagePath: { type: String, required: true },
+    storagePath: { type: String }, // Legacy field for filesystem storage (optional)
+    fileContent: { type: Buffer }, // Store actual file content in MongoDB
     mimeType: { type: String, required: true },
     sizeBytes: { type: Number, required: true },
     uploadedAt: { type: Date, default: Date.now },

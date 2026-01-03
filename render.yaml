@@ -15,3 +15,5 @@ services:
         value: AIzaSyDr98LG-_CJdxnaHGRrmSZE8JUybl3ezs0
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
+      - key: MONGODB_URI
+        value: mongodb+srv://ayushrskiaa:Ayush@2004@cluster0.pxtmkdu.mongodb.net/visa-eval?retryWrites=true&w=majority&appName=Cluster0

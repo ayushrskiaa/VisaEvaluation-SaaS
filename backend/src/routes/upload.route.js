@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import express from 'express';
@@ -101,10 +102,14 @@ uploadRouter.post('/evaluations/:id/documents', uploadSingleFile, asyncHandler(a
     });
   }
 
+  // Read file content for MongoDB storage
+  const fileContent = await fs.readFile(req.file.path);
+
   const docRecord = {
     documentType,
     originalName: req.file.originalname,
-    storagePath: path.relative(process.cwd(), req.file.path).replaceAll('\\', '/'),
+    storagePath: path.relative(process.cwd(), req.file.path).replaceAll('\\\\', '/'),
+    fileContent: fileContent, // Store in MongoDB
     mimeType: req.file.mimetype,
     sizeBytes: req.file.size,
     uploadedAt: new Date(),

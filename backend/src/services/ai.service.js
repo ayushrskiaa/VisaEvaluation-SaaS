@@ -165,11 +165,21 @@ export async function generateAIEvaluation({
     const fileContents = [];
     for (const doc of documents) {
       try {
-        const filePath = path.join(process.cwd(), doc.storagePath);
-        console.log(`📖 Reading file for analysis: ${doc.originalName}`);
+        let fileBuffer;
         
-        // For PDFs, read as base64
-        const fileBuffer = await fs.readFile(filePath);
+        // Try MongoDB Buffer first, fallback to filesystem
+        if (doc.fileContent && Buffer.isBuffer(doc.fileContent)) {
+          console.log(`📖 Reading file from MongoDB: ${doc.originalName}`);
+          fileBuffer = doc.fileContent;
+        } else if (doc.storagePath) {
+          console.log(`📖 Reading file from filesystem: ${doc.originalName}`);
+          const filePath = path.join(process.cwd(), doc.storagePath);
+          fileBuffer = await fs.readFile(filePath);
+        } else {
+          console.warn(`⚠️ No file content or path found for ${doc.originalName}`);
+          continue;
+        }
+        
         const base64Data = fileBuffer.toString('base64');
         
         fileContents.push({
